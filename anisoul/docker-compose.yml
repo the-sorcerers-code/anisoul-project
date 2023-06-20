@@ -1,0 +1,34 @@
+version: "3"
+services:
+  api:
+    build: .
+    restart: always
+    container_name: api
+    ports:
+      - "8085:8085"
+    depends_on:
+      - anidb
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.jpa.properties.hibernate.dialect": "org.hibernate.dialect.MySQLDialect",
+        "spring.datasource.url"  : "jdbc:mysql://anidb:$MYSQLDB_PORT/$MYSQL_DATABASE?useSSL=false",
+        "spring.datasource.username" : "$MYSQLDB_USER",
+        "spring.datasource.password" : "$MYSQL_ROOT_PASSWORD",
+        "server.port": $SERVER_PORT,
+        "spring.jpa.hibernate.ddl-auto" : "update"
+      }'
+
+  anidb:
+    container_name: anidb
+    image: mysql:5.7
+    restart: always
+    platform: linux/x86_64
+    ports:
+      - "3308:3308"
+    env_file:
+      - .env
+
+
+
